@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"sht3x\startup_stm32f103xb.o"
+"sht3x\main.o"
+"sht3x\gpio.o"
+"sht3x\iwdg.o"
+"sht3x\stm32f1xx_it.o"
+"sht3x\stm32f1xx_hal_msp.o"
+"sht3x\stm32f1xx_hal_gpio_ex.o"
+"sht3x\stm32f1xx_hal_iwdg.o"
+"sht3x\stm32f1xx_hal.o"
+"sht3x\stm32f1xx_hal_rcc.o"
+"sht3x\stm32f1xx_hal_rcc_ex.o"
+"sht3x\stm32f1xx_hal_gpio.o"
+"sht3x\stm32f1xx_hal_dma.o"
+"sht3x\stm32f1xx_hal_cortex.o"
+"sht3x\stm32f1xx_hal_pwr.o"
+"sht3x\stm32f1xx_hal_flash.o"
+"sht3x\stm32f1xx_hal_flash_ex.o"
+"sht3x\stm32f1xx_hal_exti.o"
+"sht3x\stm32f1xx_hal_tim.o"
+"sht3x\stm32f1xx_hal_tim_ex.o"
+"sht3x\system_stm32f1xx.o"
+"sht3x\oled.o"
+"sht3x\sht3x.o"
+--strict --scatter "SHT3x\SHT3x.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "SHT3x.map" -o SHT3x\SHT3x.axf
