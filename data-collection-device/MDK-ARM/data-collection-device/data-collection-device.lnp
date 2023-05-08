@@ -47,9 +47,14 @@
 "data-collection-device\usbd_msc_bot.o"
 "data-collection-device\usbd_msc_data.o"
 "data-collection-device\usbd_msc_scsi.o"
+"data-collection-device\include.o"
 "data-collection-device\sht30.o"
 "data-collection-device\bh1750.o"
---strict --scatter "data-collection-device\data-collection-device.sct"
+"data-collection-device\myadc.o"
+"data-collection-device\myspi.o"
+"data-collection-device\sd.o"
+"data-collection-device\sdff.o"
+--library_type=microlib --strict --scatter "data-collection-device\data-collection-device.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "data-collection-device.map" -o data-collection-device\data-collection-device.axf

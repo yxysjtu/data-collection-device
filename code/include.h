@@ -10,8 +10,15 @@
 #include "usb_device.h"
 #include "gpio.h"
 
+#include "stdio.h"
+int fputc(int ch, FILE *f);
+
 #include "sht30.h"
 #include "bh1750.h"
+#include "myadc.h"
+#include "myspi.h"
+#include "sd.h"
+#include "sdff.h"
 
 
 #endif

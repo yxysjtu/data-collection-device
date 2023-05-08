@@ -22,28 +22,54 @@ Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
 C:\Users\asus\Desktop\data-collection-device\data-collection-device\MDK-ARM\data-collection-device.uvprojx
-Project File Date:  05/07/2023
+Project File Date:  05/08/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'data-collection-device'
-compiling bh1750.c...
-compiling sht30.c...
-..\..\code\lib\sht30.h(13): warning:  #1-D: last line of file ends without a newline
+compiling sdff.c...
+..\..\code\lib\sdff.c(157): warning:  #1-D: last line of file ends without a newline
+  } 
+..\..\code\lib\sdff.c: 1 warning, 0 errors
+compiling diskio.c...
+../Middlewares/Third_Party/FatFs/src/diskio.c(140): warning:  #188-D: enumerated type mixed with another type
+      res=SD_ReadSector(buff,sector,count);
+../Middlewares/Third_Party/FatFs/src/diskio.c(147): warning:  #188-D: enumerated type mixed with another type
+  		res=SD_ReadSector(buff,sector,count);
+../Middlewares/Third_Party/FatFs/src/diskio.c(156): warning:  #111-D: statement is unreachable
+    return res;
+../Middlewares/Third_Party/FatFs/src/diskio.c(176): warning:  #188-D: enumerated type mixed with another type
+       res=SD_WriteSector((uint8_t *)buff,sector,count);
+../Middlewares/Third_Party/FatFs/src/diskio.c(181): warning:  #188-D: enumerated type mixed with another type
+  		res=SD_WriteSector((uint8_t *)buff,sector,count);
+../Middlewares/Third_Party/FatFs/src/diskio.c(190): warning:  #111-D: statement is unreachable
+    return res;
+../Middlewares/Third_Party/FatFs/src/diskio.c(233): warning:  #111-D: statement is unreachable
+    return res;
+../Middlewares/Third_Party/FatFs/src/diskio.c: 7 warnings, 0 errors
+compiling sd.c...
+compiling include.c...
+../../code/lib/sht30.h(13): warning:  #1-D: last line of file ends without a newline
    #endif
-..\..\code\lib\sht30.c(156): warning:  #1-D: last line of file ends without a newline
-  }
-..\..\code\lib\sht30.c: 2 warnings, 0 errors
+..\..\code\include.c: 1 warning, 0 errors
+compiling user_diskio.c...
+../FATFS/Target/user_diskio.c(147): warning:  #546-D: transfer of control bypasses initialization of:
+            variable "timeout"  (declared at line 153)
+  	switch (pdrv)
+  	^
+../FATFS/Target/user_diskio.c(192): warning:  #546-D: transfer of control bypasses initialization of:
+            variable "timeout"  (declared at line 197)
+  	switch (pdrv)
+  	^
+../FATFS/Target/user_diskio.c: 2 warnings, 0 errors
 compiling main.c...
 ../../code/lib/sht30.h(13): warning:  #1-D: last line of file ends without a newline
    #endif
-../../code/run.h(34): warning:  #1-D: last line of file ends without a newline
-  }
-../Core/Src/main.c: 2 warnings, 0 errors
+../Core/Src/main.c: 1 warning, 0 errors
 linking...
-Program Size: Code=21534 RO-data=354 RW-data=352 ZI-data=4528  
+Program Size: Code=30442 RO-data=538 RW-data=392 ZI-data=8040  
 FromELF: creating hex file...
-"data-collection-device\data-collection-device.axf" - 0 Error(s), 4 Warning(s).
+"data-collection-device\data-collection-device.axf" - 0 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -66,7 +92,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

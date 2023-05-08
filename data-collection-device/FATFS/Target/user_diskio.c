@@ -35,6 +35,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "ff_gen_drv.h"
+#include "sd.h"
+#include "stdio.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -81,8 +84,22 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
-    return Stat;
+	uint8_t	res = SD_Init();//SD_Initialize() 
+	printf("user_res_init:%d\r\n", res);
+	int timeout = 5;
+	while(res && timeout--){
+		res = SD_Init();//SD_Initialize() 
+		printf("user_res_init:%d\r\n", res);
+	}
+	/*if(res)//STM32 SPI的bug,在sd卡操作失败的时候如果不执行下面的语句,可能导致SPI读写异常
+	{
+		SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_256);
+		SPI_ReadWriteByte(&sdcard, 0xff);//提供额外的8个时钟
+		SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_4);
+	}*/
+	//return RES_OK;
+	if(res) return  STA_NOINIT;
+	else return RES_OK; //初始化成功
   /* USER CODE END INIT */
 }
 
@@ -96,8 +113,13 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
-    Stat = STA_NOINIT;
-    return Stat;
+	switch (pdrv)
+	{
+		case 0 :
+			return RES_OK;
+		default:
+			return STA_NOINIT;
+	}
   /* USER CODE END STATUS */
 }
 
@@ -117,7 +139,30 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-    return RES_OK;
+	uint8_t res;
+	if(!count)
+	{    
+		return RES_PARERR;  /* count不能等于0，否则返回参数错误 */
+	}
+	switch (pdrv)
+	{
+		case 0:
+		    res=SD_ReadSector(buff,sector,count);
+			printf("res_read:%d %d %d\r\n", res, (int)sector, count);
+				
+			int timeout = 5;
+			while(res && timeout--){
+				res=SD_ReadSector(buff,sector,count);
+				printf("res_read:%d %d %d\r\n", res, (int)sector, count);
+			}
+			if(res == 0){
+				return RES_OK;
+			}else{
+				return RES_ERROR;
+			}                                               
+		default:
+			return RES_ERROR;
+	}
   /* USER CODE END READ */
 }
 
@@ -139,7 +184,28 @@ DRESULT USER_write (
 {
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
-    return RES_OK;
+	uint8_t  res;
+	if(!count)
+	{    
+		return RES_PARERR;  /* count不能等于0，否则返回参数错误 */
+	}
+	switch (pdrv)
+	{
+		case 0:
+		    res=SD_WriteSector((uint8_t *)buff,sector,count);
+			printf("res_write:%d %d %d\r\n", res, (int)sector, count);
+			int timeout = 5;
+			while(res && timeout--){
+				res=SD_WriteSector((uint8_t *)buff,sector,count);
+				printf("res_write:%d %d %d\r\n", res, (int)sector, count);
+			}
+			if(res == 0){
+				return RES_OK;
+			}else{
+				return RES_ERROR;
+			}                                                
+		default:return RES_ERROR;
+	}
   /* USER CODE END WRITE */
 }
 #endif /* _USE_WRITE == 1 */
@@ -159,8 +225,30 @@ DRESULT USER_ioctl (
 )
 {
   /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
-    return res;
+   DRESULT res;
+	 switch(cmd)
+	    {
+		    case CTRL_SYNC:
+				SD_GetResponse(0XFF);
+				res=RES_OK;
+		        break;	 
+		    case GET_SECTOR_SIZE:
+		        *(WORD*)buff = 512;
+		        res = RES_OK;
+		        break;	 
+		    case GET_BLOCK_SIZE:
+		        *(WORD*)buff = 8;
+		        res = RES_OK;
+		        break;	 
+		    case GET_SECTOR_COUNT:
+		        *(DWORD*)buff = SD_GetSectorCount();
+		        res = RES_OK;
+		        break;
+		    default:
+		        res = RES_PARERR;
+		        break;
+	    }
+		return res;
   /* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */

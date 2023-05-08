@@ -4341,6 +4341,7 @@ FRESULT f_mkfs (
 			return FR_DISK_ERR;
 		mem_set(tbl, 0, SS(fs));			/* Fill following FAT entries with zero */
 		for (n = 1; n < n_fat; n++) {		/* This loop may take a time on FAT32 volume due to many single sector writes */
+			if(wsect % 500 == 0) disk_initialize(0);
 			if (disk_write(pdrv, tbl, wsect++, 1) != RES_OK)
 				return FR_DISK_ERR;
 		}

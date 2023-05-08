@@ -58,6 +58,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "diskio.h"
 #include "ff_gen_drv.h"
+#include "sd.h"
+#include "stdio.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -77,8 +79,8 @@ DSTATUS disk_status (
 )
 {
   DSTATUS stat;
-  
-  stat = disk.drv[pdrv]->disk_status(disk.lun[pdrv]);
+  stat = RES_OK;
+  //stat = disk.drv[pdrv]->disk_status(disk.lun[pdrv]);
   return stat;
 }
 
@@ -91,14 +93,32 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-  DSTATUS stat = RES_OK;
+  /*DSTATUS stat = RES_OK;
   
   if(disk.is_initialized[pdrv] == 0)
   { 
     disk.is_initialized[pdrv] = 1;
     stat = disk.drv[pdrv]->disk_initialize(disk.lun[pdrv]);
   }
-  return stat;
+  
+  return stat;*/
+
+	uint8_t	res = SD_Init();//SD_Initialize() 
+	printf("user_res_init:%d\r\n", res);
+	int timeout = 5;
+	while(res && timeout--){
+		res = SD_Init();//SD_Initialize() 
+		printf("user_res_init:%d\r\n", res);
+	}
+	/*if(res)//STM32 SPI的bug,在sd卡操作失败的时候如果不执行下面的语句,可能导致SPI读写异常
+	{
+		SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_256);
+		SPI_ReadWriteByte(&sdcard, 0xff);//提供额外的8个时钟
+		SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_4);
+	}*/
+	//return RES_OK;
+	if(res) return  STA_NOINIT;
+	else return RES_OK; //初始化成功
 }
 
 /**
@@ -117,8 +137,22 @@ DRESULT disk_read (
 )
 {
   DRESULT res;
- 
-  res = disk.drv[pdrv]->disk_read(disk.lun[pdrv], buff, sector, count);
+    res=SD_ReadSector(buff,sector,count);
+	printf("res_read:%d %d %d\r\n", res, (int)sector, count);
+		
+	int timeout = 5;
+	while(res && timeout--){
+		SD_Init();
+		
+		res=SD_ReadSector(buff,sector,count);
+		printf("res_read:%d %d %d\r\n", res, (int)sector, count);
+	}
+	if(res == 0){
+		return RES_OK;
+	}else{
+		return RES_ERROR;
+	}  
+  //res = disk.drv[pdrv]->disk_read(disk.lun[pdrv], buff, sector, count);
   return res;
 }
 
@@ -139,8 +173,20 @@ DRESULT disk_write (
 )
 {
   DRESULT res;
-  
-  res = disk.drv[pdrv]->disk_write(disk.lun[pdrv], buff, sector, count);
+     res=SD_WriteSector((uint8_t *)buff,sector,count);
+	printf("res_write:%d %d %d\r\n", res, (int)sector, count);
+	int timeout = 5;
+	while(res && timeout--){
+	
+		res=SD_WriteSector((uint8_t *)buff,sector,count);
+		printf("res_write:%d %d %d\r\n", res, (int)sector, count);
+	}
+	if(res == 0){
+		return RES_OK;
+	}else{
+		return RES_ERROR;
+	}                                 
+  //res = disk.drv[pdrv]->disk_write(disk.lun[pdrv], buff, sector, count);
   return res;
 }
 #endif /* _USE_WRITE == 1 */
@@ -159,9 +205,31 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-  DRESULT res;
-
-  res = disk.drv[pdrv]->disk_ioctl(disk.lun[pdrv], cmd, buff);
+  DRESULT res = RES_OK;
+	 switch(cmd)
+	{
+		case CTRL_SYNC:
+			SD_GetResponse(0XFF);
+			res=RES_OK;
+			break;	 
+		case GET_SECTOR_SIZE:
+			*(WORD*)buff = 512;
+			res = RES_OK;
+			break;	 
+		case GET_BLOCK_SIZE:
+			*(WORD*)buff = 8;
+			res = RES_OK;
+			break;	 
+		case GET_SECTOR_COUNT:
+			*(DWORD*)buff = SD_GetSectorCount();
+			res = RES_OK;
+			break;
+		default:
+			res = RES_PARERR;
+			break;
+	}
+	return res;
+  //res = disk.drv[pdrv]->disk_ioctl(disk.lun[pdrv], cmd, buff);
   return res;
 }
 #endif /* _USE_IOCTL == 1 */

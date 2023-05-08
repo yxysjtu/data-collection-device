@@ -55,4 +55,8 @@ data-collection-device\main.o: ../../code/run.h
 data-collection-device\main.o: ../../code/include.h
 data-collection-device\main.o: ../../code/lib/sht30.h
 data-collection-device\main.o: ../../code/lib/bh1750.h
+data-collection-device\main.o: ../../code/lib/myadc.h
+data-collection-device\main.o: ../../code/lib/myspi.h
+data-collection-device\main.o: ../../code/lib/sd.h
+data-collection-device\main.o: ../../code/lib/sdff.h
 data-collection-device\main.o: ../../code/callback.h

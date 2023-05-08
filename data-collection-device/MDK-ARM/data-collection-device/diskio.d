@@ -38,3 +38,7 @@ data-collection-device\diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_h
 data-collection-device\diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 data-collection-device\diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
 data-collection-device\diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h
+data-collection-device\diskio.o: ../../code/lib/sd.h
+data-collection-device\diskio.o: ../../code/lib/myspi.h
+data-collection-device\diskio.o: ../Core/Inc/spi.h
+data-collection-device\diskio.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
