@@ -12,9 +12,9 @@ spi_dev_t sdcard = {
 //static uint8_t    spi_tx_buf[256];   /**< TX buffer. */
 //static uint8_t    spi_rx_buf[256];   /**< RX buffer. */
 
+#define SELECT HAL_GPIO_WritePin(sdcard.CS_Port, sdcard.CS_Pin, GPIO_PIN_RESET);
 
-
-
+#define DESELECT HAL_GPIO_WritePin(sdcard.CS_Port, sdcard.CS_Pin, GPIO_PIN_SET);SPI_ReadOne(&sdcard);
 
 //向SD卡发送一个命令
 //输入: u8 cmd   命令 
@@ -25,8 +25,10 @@ u8 SD_SendCmd(u8 cmd, u32 arg, u8 crc)
 {
     u8 r1;	
 	u8 Retry=0; 
-	// SD_DisSelect();//取消上次片选
-	// if(SD_Select())return 0XFF;//片选失效 
+	DESELECT;
+	SELECT;
+	if(SD_GetResponse(0xff)) return 0xff; //SD_BUSY
+
 	//发送
     SPI_WriteOne(&sdcard, cmd | 0x40);//分别写入命令
     SPI_WriteOne(&sdcard, arg >> 24);
@@ -107,7 +109,9 @@ u8 SD_Init(void)
 		}
 	}
 	// SD_DisSelect();//取消片选
-	SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_4);//高速
+	DESELECT;
+	SPI_SetSpeed(&sdcard, SPI_BAUDRATEPRESCALER_8);//高速
+	SPI_ReadOne(&sdcard);
 	if(SD_Type)return 0;
 	else if(r1)return r1; 
 	return 0xaa;//其他错误
@@ -123,6 +127,8 @@ u8 SD_GetResponse(u8 Response)
 	while ((SPI_ReadOne(&sdcard)!=Response)&&Count)Count--;//等待得到准确的回应  	  
 	if (Count==0)return MSD_RESPONSE_FAILURE;//得到回应失败   
 	else return MSD_RESPONSE_NO_ERROR;//正确回应
+	//while ((SPI_ReadOne(&sdcard)!=Response));
+	return 0;
 }
 
 u8 SD_WriteSector(u8* buf,u32 sector,u32 cnt){
@@ -143,14 +149,14 @@ u8 SD_WriteSector(u8* buf,u32 sector,u32 cnt){
 		}
 		state = SD_SendData(0,0xFD);//写结束指令
 	}
-	HAL_Delay(1);
+	DESELECT;
 	return state;
 }
 
 u8 SD_ReadSector(u8* buf, u32 sector, u32 cnt){
 	u32 i = 0;
 	u8 state = 0;
-	if(SD_GetResponse(0xFF)) return 1;
+	
 	if(cnt == 1){
 		SD_SendCmd(CMD17,sector,0x01);//读扇区
 		state = SD_RecvData(buf, 512);			//接收512个字节	   
@@ -162,7 +168,7 @@ u8 SD_ReadSector(u8* buf, u32 sector, u32 cnt){
 		}
 		SD_SendCmd(CMD12,0,0x01);	//停止数据传输
 	}   
-	HAL_Delay(1);
+	DESELECT;
 	return state;
 
 }
@@ -213,6 +219,7 @@ u8 SD_GetCSD(u8 *csd_data)
 	{
     	r1=SD_RecvData(csd_data, 16);//接收16个字节的数据 
     }
+	DESELECT;
 	// SD_DisSelect();//取消片选
 	if(r1)return 1;
 	else return 0;

@@ -29,7 +29,6 @@ data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
-data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 data-collection-device\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -43,7 +42,6 @@ data-collection-device\include.o: ../Middlewares/Third_Party/FatFs/src/ff_gen_dr
 data-collection-device\include.o: ../Middlewares/Third_Party/FatFs/src/diskio.h
 data-collection-device\include.o: ../FATFS/Target/user_diskio.h
 data-collection-device\include.o: ../Core/Inc/i2c.h
-data-collection-device\include.o: ../Core/Inc/spi.h
 data-collection-device\include.o: ../Core/Inc/usart.h
 data-collection-device\include.o: ../USB_DEVICE/App/usb_device.h
 data-collection-device\include.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
@@ -55,6 +53,4 @@ data-collection-device\include.o: ../Core/Inc/gpio.h
 data-collection-device\include.o: ../../code/lib/sht30.h
 data-collection-device\include.o: ../../code/lib/bh1750.h
 data-collection-device\include.o: ../../code/lib/myadc.h
-data-collection-device\include.o: ../../code/lib/myspi.h
-data-collection-device\include.o: ../../code/lib/sd.h
-data-collection-device\include.o: ../../code/lib/sdff.h
+data-collection-device\include.o: ../../code/lib/myflash.h

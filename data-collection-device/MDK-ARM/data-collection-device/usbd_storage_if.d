@@ -36,7 +36,6 @@ data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/st
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
-data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 data-collection-device\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -46,3 +45,4 @@ data-collection-device\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Lib
 data-collection-device\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 data-collection-device\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 data-collection-device\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc/usbd_msc_scsi.h
+data-collection-device\usbd_storage_if.o: ../../code/lib/myflash.h

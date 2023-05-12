@@ -4,7 +4,6 @@
 "data-collection-device\gpio.o"
 "data-collection-device\adc.o"
 "data-collection-device\i2c.o"
-"data-collection-device\spi.o"
 "data-collection-device\usart.o"
 "data-collection-device\stm32f1xx_it.o"
 "data-collection-device\stm32f1xx_hal_msp.o"
@@ -31,7 +30,6 @@
 "data-collection-device\stm32f1xx_hal_adc.o"
 "data-collection-device\stm32f1xx_hal_adc_ex.o"
 "data-collection-device\stm32f1xx_hal_i2c.o"
-"data-collection-device\stm32f1xx_hal_spi.o"
 "data-collection-device\stm32f1xx_hal_tim.o"
 "data-collection-device\stm32f1xx_hal_tim_ex.o"
 "data-collection-device\stm32f1xx_hal_uart.o"
@@ -51,9 +49,7 @@
 "data-collection-device\sht30.o"
 "data-collection-device\bh1750.o"
 "data-collection-device\myadc.o"
-"data-collection-device\myspi.o"
-"data-collection-device\sd.o"
-"data-collection-device\sdff.o"
+"data-collection-device\myflash.o"
 --library_type=microlib --strict --scatter "data-collection-device\data-collection-device.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

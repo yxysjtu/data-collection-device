@@ -34,12 +34,8 @@ data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
-data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
 data-collection-device\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h
-data-collection-device\user_diskio.o: ../../code/lib/sd.h
-data-collection-device\user_diskio.o: ../../code/lib/myspi.h
-data-collection-device\user_diskio.o: ../Core/Inc/spi.h
-data-collection-device\user_diskio.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+data-collection-device\user_diskio.o: ../../code/lib/myflash.h

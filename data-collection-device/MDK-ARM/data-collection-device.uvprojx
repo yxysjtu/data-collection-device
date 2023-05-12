@@ -413,11 +413,6 @@
               <FilePath>../Core/Src/i2c.c</FilePath>
             </File>
             <File>
-              <FileName>spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Core/Src/spi.c</FilePath>
-            </File>
-            <File>
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/usart.c</FilePath>
@@ -573,11 +568,6 @@
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f1xx_hal_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f1xx_hal_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</FilePath>
@@ -708,19 +698,9 @@
               <FilePath>..\..\code\lib\myadc.c</FilePath>
             </File>
             <File>
-              <FileName>myspi.c</FileName>
+              <FileName>myflash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\code\lib\myspi.c</FilePath>
-            </File>
-            <File>
-              <FileName>sd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\code\lib\sd.c</FilePath>
-            </File>
-            <File>
-              <FileName>sdff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\code\lib\sdff.c</FilePath>
+              <FilePath>..\..\code\lib\myflash.c</FilePath>
             </File>
           </Files>
         </Group>
