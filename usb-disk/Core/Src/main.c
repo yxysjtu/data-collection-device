@@ -183,11 +183,11 @@ int main(void)
   MX_GPIO_Init();
   MX_FATFS_Init();
   MX_USB_DEVICE_Init();
-  MX_SDIO_SD_Init();
+  //MX_SDIO_SD_Init();
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
-  MX_RTC_Init();
+  //MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -200,7 +200,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  
-	  HAL_RTC_GetTime(&hrtc, &realTime, RTC_FORMAT_BCD);
+	  //HAL_RTC_GetTime(&hrtc, &realTime, RTC_FORMAT_BCD);
 	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	  HAL_Delay(500);
   }
