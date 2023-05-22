@@ -14,7 +14,7 @@ int bh1750_state;
 uint32_t sound_v;
 int raw_sound;
 int32_t sound_level = 0;
-float db = 30, k = 10, offset = 0;
+float db = 30, k = 8, offset = 0;
 
 //flash
 uint8_t txbuf[2048];
@@ -29,8 +29,11 @@ FIL file;
 UINT br;
 
 //RTC
-RTC_TimeTypeDef time={0};
-RTC_DateTypeDef date={0};
+//RTC_TimeTypeDef time = {0};
+//RTC_DateTypeDef date = {0};
+//RTC_AlarmTypeDef alarm = {0};
+uint32_t rtc_cnt;
+extern uint8_t usb_state;
 
 int testt = 0;
 
@@ -41,6 +44,10 @@ uint32_t getsize(char *s){
 	}
 	return i + 1;
 }
+
+//TODO write err message in txt file
+//TODO if wrong data write NULL
+//TODO read config file(auto calibrate time script)
 
 FRESULT fs_write(){
     uint32_t size = 0;
@@ -53,11 +60,12 @@ FRESULT fs_write(){
         fr = f_mount(&fs, path, 1);
     }
 
-    HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
-	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);  
+    //HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
+	//HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);  
+	RTC_Get();
 
     memset(buf,0,sizeof(buf));
-    sprintf((char *)buf,"0:FC%02d%02d%02d.csv",(date.Year+23),date.Month,date.Date);//按日期进行数据存储
+    sprintf((char *)buf,"0:FC%02d%02d%02d.csv",calendar.w_year%2000,calendar.w_month,calendar.w_date);//按日期进行数据存储
     fr = f_open(&file,(const char *)buf, FA_OPEN_ALWAYS | FA_WRITE);
     if(fr == FR_OK){
         size = f_size(&file);
@@ -72,8 +80,8 @@ FRESULT fs_write(){
             fr = f_lseek(&file, size);
             memset(buf,0,sizeof(buf));
             sprintf((char *)buf,"%d:%d,%.1f,%.1f,%d,%.1f\r\n", 
-                        time.Hours,
-                        time.Minutes,
+                        calendar.hour,
+                        calendar.min,
                         temperature,
                         humidity,
                         light,
@@ -94,30 +102,8 @@ FRESULT fs_write(){
 
     return fr;
 }
-	
-void setup(){
-	SHT30_Reset();
-	SHT30_Init();
-	
-	/*date.Month = 5;
-	date.Date = 19;
-	time.Hours = 14;
-	time.Minutes = 30;
-	HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
-	HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);*/
-	
-	//sprintf((char *)txbuf, "helloworld");
-	//Flash_Write(txbuf, 0, 1);
-	//Flash_Read(rxbuf, 0, 1);
-	
-	
-	
-}
 
-void loop(){
-	HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
-	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);  
-	
+void read_sensor(){
 	sht_state = SHT30_Read_Dat(dat);
 	SHT30_Dat_To_Float(dat, &temperature, &humidity);
 
@@ -134,7 +120,7 @@ void loop(){
 			sound_level += raw_sound;
 		}
 		sound_level /= 1000;
-		db = db * 0.9 + (k * log((double)sound_level) + offset) * 0.1;
+		db = k * log((double)sound_level) + offset;
 	}
 	
 	
@@ -142,12 +128,75 @@ void loop(){
 	HAL_Delay(200);
 	bh1750_state = BH1750_Read_Dat(dat);
 	light = BH1750_Dat_To_Lux(dat);	
+}
+	
+void setup(){
+	//RTC_Set(2023,5,23,1,40,0);
+	//rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
+	//date.Month = 5;
+	//date.Date = 23;
+	//time.Hours = 23;
+	//time.Minutes = 59;
+	//time.Seconds = 50;
+	//HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
+	//HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+	
+	SHT30_Reset();
+	SHT30_Init();
+	
+	read_sensor();
+	read_sensor();
+	read_sensor();
+	read_sensor();
+	read_sensor();
+	
+	fs_write();
 	
 	
-	if(testt++ < 5) fs_write();
+	/*HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
+	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN); 
+
+	time.Seconds += 10;
+	if(time.Seconds >= 60){
+		time.Seconds = 0;
+		time.Minutes++;
+	}
+	if(time.Minutes >= 60){
+		time.Minutes = 0;
+		time.Hours++;
+	}
+	if(time.Hours >= 24){
+		time.Hours = 0;
+	}
+	RTC_AlarmTypeDef alarm = {time, RTC_ALARM_A};
+	HAL_RTC_SetAlarm(&hrtc, &alarm, RTC_FORMAT_BIN);*/
+	
+	while(usb_state){}
+	RTC_SetAlarm(10);
+	
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+	HAL_PWR_EnterSTANDBYMode();
+	
+	
+	//sprintf((char *)txbuf, "helloworld");
+	//Flash_Write(txbuf, 0, 1);
+	//Flash_Read(rxbuf, 0, 1);
+	
+	
+	
+}
+
+void loop(){ 
+	//HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
+	//HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN); 
+	rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
+	RTC_Get();
+	
+	
+	//if(testt++ < 5) fs_write();
 	
 	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	HAL_Delay(200);
+	HAL_Delay(500);
 	
 	//I2C restart if no reply
 }

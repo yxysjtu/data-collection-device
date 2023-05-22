@@ -58,3 +58,4 @@ firmware\include.o: ../../code/lib/sht30.h
 firmware\include.o: ../../code/lib/bh1750.h
 firmware\include.o: ../../code/lib/myadc.h
 firmware\include.o: ../../code/lib/Flash.h
+firmware\include.o: ../../code/lib/myrtc.h

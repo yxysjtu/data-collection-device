@@ -15,7 +15,7 @@
   *
   ******************************************************************************
   */
- #include "rtc.h"
+ #include "myrtc.h"
 /* USER CODE END Header */
 #include "fatfs.h"
 
@@ -46,16 +46,13 @@ void MX_FATFS_Init(void)
 DWORD get_fattime(void)
 {
   /* USER CODE BEGIN get_fattime */
-	RTC_TimeTypeDef time={0};
-	RTC_DateTypeDef date={0};
-	HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
-	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);  
-    return ((DWORD)(date.Year + 2023 - 1980) << 25) /* Year 2015 */
-		| ((DWORD)date.Month << 21) /* Month 1 */
-		| ((DWORD)date.WeekDay << 16) /* Mday 1 */
-		| ((DWORD)time.Hours << 11) /* Hour 0 */
-		| ((DWORD)time.Minutes << 5) /* Min 0 */
-		| ((DWORD)time.Seconds >> 1); /* Sec 0 */
+	RTC_Get(); 
+    return ((DWORD)(calendar.w_year - 1980) << 25) /* Year 2015 */
+		| ((DWORD)calendar.w_month << 21) /* Month 1 */
+		| ((DWORD)calendar.w_date << 16) /* Mday 1 */
+		| ((DWORD)calendar.hour << 11) /* Hour 0 */
+		| ((DWORD)calendar.min << 5) /* Min 0 */
+		| ((DWORD)calendar.sec >> 1); /* Sec 0 */
   /* USER CODE END get_fattime */
 }
 

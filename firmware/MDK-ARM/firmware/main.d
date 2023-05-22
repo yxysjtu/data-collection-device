@@ -59,4 +59,5 @@ firmware\main.o: ../../code/lib/sht30.h
 firmware\main.o: ../../code/lib/bh1750.h
 firmware\main.o: ../../code/lib/myadc.h
 firmware\main.o: ../../code/lib/Flash.h
+firmware\main.o: ../../code/lib/myrtc.h
 firmware\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -721,6 +721,11 @@
               <FileName>Flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\code\lib\Flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>myrtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\code\lib\myrtc.c</FilePath>
             </File>
           </Files>
         </Group>

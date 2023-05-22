@@ -1,5 +1,5 @@
 firmware\fatfs.o: ../FATFS/App/fatfs.c
-firmware\fatfs.o: ../Core/Inc/rtc.h
+firmware\fatfs.o: ../../code/lib/myrtc.h
 firmware\fatfs.o: ../Core/Inc/main.h
 firmware\fatfs.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 firmware\fatfs.o: ../Core/Inc/stm32f1xx_hal_conf.h
