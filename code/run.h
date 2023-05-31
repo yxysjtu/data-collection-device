@@ -131,7 +131,7 @@ void read_sensor(){
 }
 	
 void setup(){
-	//RTC_Set(2023,5,23,1,40,0);
+	//RTC_Set(2023,5,23,14,20,0);
 	//rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
 	//date.Month = 5;
 	//date.Date = 23;
@@ -152,6 +152,8 @@ void setup(){
 	
 	fs_write();
 	
+	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
+	
 	
 	/*HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
 	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN); 
@@ -171,11 +173,11 @@ void setup(){
 	RTC_AlarmTypeDef alarm = {time, RTC_ALARM_A};
 	HAL_RTC_SetAlarm(&hrtc, &alarm, RTC_FORMAT_BIN);*/
 	
-	while(usb_state){}
-	RTC_SetAlarm(10);
+	/*while(usb_state){}
+	RTC_SetAlarm(60*60);
 	
 	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-	HAL_PWR_EnterSTANDBYMode();
+	HAL_PWR_EnterSTANDBYMode();*/
 	
 	
 	//sprintf((char *)txbuf, "helloworld");
@@ -191,12 +193,14 @@ void loop(){
 	//HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN); 
 	rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
 	RTC_Get();
+	read_sensor();
 	
 	
 	//if(testt++ < 5) fs_write();
 	
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	HAL_GPIO_TogglePin(VCONT_GPIO_Port, VCONT_Pin);
 	HAL_Delay(500);
+	printf("asdf");
 	
 	//I2C restart if no reply
 }
