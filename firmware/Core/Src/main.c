@@ -22,6 +22,7 @@
 #include "fatfs.h"
 #include "i2c.h"
 #include "rtc.h"
+#include "spi.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -96,8 +97,13 @@ int main(void)
   MX_FATFS_Init();
   MX_USB_DEVICE_Init();
   MX_RTC_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_ADC_Start(&hadc1);
+    if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) != RESET)//检查并检查系统是否从待机模式恢复
+  {
+    /* Clear Standby flag */
+    __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+  }
 	setup();
   /* USER CODE END 2 */
 
@@ -126,11 +132,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
@@ -154,7 +160,7 @@ void SystemClock_Config(void)
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC
                               |RCC_PERIPHCLK_USB;
-  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)

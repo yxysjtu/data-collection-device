@@ -39,6 +39,7 @@ firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
+firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\usbd_storage_if.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -49,3 +50,6 @@ firmware\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/
 firmware\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 firmware\usbd_storage_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc/usbd_msc_scsi.h
 firmware\usbd_storage_if.o: ../../code/lib/Flash.h
+firmware\usbd_storage_if.o: ../../code/lib/w25q128.h
+firmware\usbd_storage_if.o: ../Core/Inc/spi.h
+firmware\usbd_storage_if.o: ../Core/Inc/usart.h

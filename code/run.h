@@ -17,8 +17,9 @@ int32_t sound_level = 0;
 float db = 30, k = 8, offset = 0;
 
 //flash
-uint8_t txbuf[2048];
-uint8_t rxbuf[2048];
+uint8_t txbuf[4096];
+uint8_t rxbuf[4096];
+uint16_t flash_id = 0;
 
 
 //fatfs
@@ -131,7 +132,7 @@ void read_sensor(){
 }
 	
 void setup(){
-	//RTC_Set(2023,5,23,14,20,0);
+	//RTC_Set(2023,6,1,23,12,0);
 	//rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
 	//date.Month = 5;
 	//date.Date = 23;
@@ -143,6 +144,19 @@ void setup(){
 	
 	SHT30_Reset();
 	SHT30_Init();
+	
+	//test flash
+	/*flash_id = read_W25Q128_ID();
+	for(uint32_t i = 0; i < 4096; i++){
+		txbuf[i] = i % 256;
+	}*/
+	//sprintf((char*)txbuf, "Helloworld!!!");
+	
+	//W25Q128_Writeblk(txbuf, 4096, 1);
+	//W25Q128_Readblk(rxbuf, 4096, 1);
+	
+	
+	
 	
 	read_sensor();
 	read_sensor();
@@ -173,11 +187,13 @@ void setup(){
 	RTC_AlarmTypeDef alarm = {time, RTC_ALARM_A};
 	HAL_RTC_SetAlarm(&hrtc, &alarm, RTC_FORMAT_BIN);*/
 	
-	/*while(usb_state){}
+	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){}
 	RTC_SetAlarm(60*60);
 	
-	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-	HAL_PWR_EnterSTANDBYMode();*/
+    HAL_PWR_DisableWakeUpPin(PWR_WAKEUP_PIN1);//禁用所有使用的唤醒源:PWR_WAKEUP_PIN1 connected to PA.00
+    __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);//清除所有相关的唤醒标志
+    HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);//启用连接到PA.00的WakeUp Pin
+	HAL_PWR_EnterSTANDBYMode();
 	
 	
 	//sprintf((char *)txbuf, "helloworld");
@@ -198,9 +214,9 @@ void loop(){
 	
 	//if(testt++ < 5) fs_write();
 	
-	HAL_GPIO_TogglePin(VCONT_GPIO_Port, VCONT_Pin);
+	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	HAL_Delay(500);
-	printf("asdf");
+	//HAL_GPIO_WritePin(DONE_GPIO_Port, DONE_Pin, 1);
 	
 	//I2C restart if no reply
 }

@@ -32,6 +32,7 @@ firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
+firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\include.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -59,3 +60,5 @@ firmware\include.o: ../../code/lib/bh1750.h
 firmware\include.o: ../../code/lib/myadc.h
 firmware\include.o: ../../code/lib/Flash.h
 firmware\include.o: ../../code/lib/myrtc.h
+firmware\include.o: ../../code/lib/w25q128.h
+firmware\include.o: ../Core/Inc/spi.h

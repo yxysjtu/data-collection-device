@@ -31,6 +31,7 @@ firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
+firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -45,6 +46,7 @@ firmware\main.o: ../Middlewares/Third_Party/FatFs/src/diskio.h
 firmware\main.o: ../FATFS/Target/user_diskio.h
 firmware\main.o: ../Core/Inc/i2c.h
 firmware\main.o: ../Core/Inc/rtc.h
+firmware\main.o: ../Core/Inc/spi.h
 firmware\main.o: ../Core/Inc/usart.h
 firmware\main.o: ../USB_DEVICE/App/usb_device.h
 firmware\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
@@ -60,4 +62,5 @@ firmware\main.o: ../../code/lib/bh1750.h
 firmware\main.o: ../../code/lib/myadc.h
 firmware\main.o: ../../code/lib/Flash.h
 firmware\main.o: ../../code/lib/myrtc.h
+firmware\main.o: ../../code/lib/w25q128.h
 firmware\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

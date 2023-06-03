@@ -19,6 +19,7 @@ int fputc(int ch, FILE *f);
 #include "myadc.h"
 #include "Flash.h"
 #include "myrtc.h"
+#include "w25q128.h"
 //#include "myspi.h"
 //#include "sd.h"
 //#include "sdff.h"
