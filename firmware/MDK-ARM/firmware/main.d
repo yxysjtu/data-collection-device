@@ -63,4 +63,5 @@ firmware\main.o: ../../code/lib/myadc.h
 firmware\main.o: ../../code/lib/Flash.h
 firmware\main.o: ../../code/lib/myrtc.h
 firmware\main.o: ../../code/lib/w25q128.h
+firmware\main.o: ../../code/lib/oled.h
 firmware\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

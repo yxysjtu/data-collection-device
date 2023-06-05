@@ -2,6 +2,8 @@
 #include "usart.h"
 #include <stdio.h>
 
+extern uint8_t w25q128_busy;
+
 uint16_t read_W25Q128_ID();
 void W25Q128_Writeblk(uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
 void W25Q128_Readblk(uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);

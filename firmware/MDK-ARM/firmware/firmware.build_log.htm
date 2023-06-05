@@ -22,27 +22,25 @@ Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
 C:\Users\asus\Desktop\data-collection-device\firmware\MDK-ARM\firmware.uvprojx
-Project File Date:  06/01/2023
+Project File Date:  06/03/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'firmware'
-compiling usbd_storage_if.c...
-../../code/lib/w25q128.h(5): warning:  #1295-D: Deprecated declaration read_W25Q128_ID - give arg types
-  uint16_t read_W25Q128_ID();
-../../code/lib/w25q128.h(13): warning:  #1-D: last line of file ends without a newline
-  void Erase_one_Sector(uint32_t Address);
-../USB_DEVICE/App/usbd_storage_if.c: 2 warnings, 0 errors
 compiling main.c...
 ../../code/lib/sht30.h(13): warning:  #1-D: last line of file ends without a newline
    #endif
-../../code/lib/w25q128.h(5): warning:  #1295-D: Deprecated declaration read_W25Q128_ID - give arg types
+../../code/lib/w25q128.h(7): warning:  #1295-D: Deprecated declaration read_W25Q128_ID - give arg types
   uint16_t read_W25Q128_ID();
-../../code/lib/w25q128.h(13): warning:  #1-D: last line of file ends without a newline
+../../code/lib/w25q128.h(15): warning:  #1-D: last line of file ends without a newline
   void Erase_one_Sector(uint32_t Address);
-../Core/Src/main.c: 3 warnings, 0 errors
+../../code/lib/oled.h(30): warning:  #1-D: last line of file ends without a newline
+  #endif
+../../code/run.h(204): warning:  #128-D: loop is not reachable
+  	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+../Core/Src/main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=49422 RO-data=686 RW-data=420 ZI-data=24596  
+Program Size: Code=51164 RO-data=2760 RW-data=464 ZI-data=20552  
 FromELF: creating hex file...
 "firmware\firmware.axf" - 0 Error(s), 5 Warning(s).
 
@@ -67,7 +65,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

@@ -62,3 +62,4 @@ firmware\include.o: ../../code/lib/Flash.h
 firmware\include.o: ../../code/lib/myrtc.h
 firmware\include.o: ../../code/lib/w25q128.h
 firmware\include.o: ../Core/Inc/spi.h
+firmware\include.o: ../../code/lib/oled.h

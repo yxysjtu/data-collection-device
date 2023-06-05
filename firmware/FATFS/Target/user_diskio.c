@@ -36,6 +36,7 @@
 #include <string.h>
 #include "ff_gen_drv.h"
 #include "Flash.h"
+#include "w25q128.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -117,7 +118,12 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-	return Flash_Read((uint8_t*)buff, sector, count);
+	//return Flash_Read((uint8_t*)buff, sector, count);
+	while(w25q128_busy);
+	w25q128_busy = 1;
+	Read_W25Q128_data((uint8_t*)buff, sector * 4096, count * 4096);
+	w25q128_busy = 0;
+	return RES_OK;
   /* USER CODE END READ */
 }
 
@@ -139,7 +145,13 @@ DRESULT USER_write (
 {
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
-	return Flash_Write((uint8_t*)buff, sector, count);
+	while(w25q128_busy);
+	w25q128_busy = 1;
+	Erase_Write_data_Sector(sector*4096, count*4096);
+	Write_Page((uint8_t*)buff, sector * 4096, count * 4096);
+	w25q128_busy = 0;
+	return RES_OK;
+	//return Flash_Write((uint8_t*)buff, sector, count);
   /* USER CODE END WRITE */
 }
 #endif /* _USE_WRITE == 1 */
@@ -172,10 +184,10 @@ DRESULT USER_ioctl (
 		*(DWORD*)buff = 1; 
 		break;	
     case GET_SECTOR_SIZE:
-		*(DWORD*)buff = FLASH_BLK_SIZ;
+		*(DWORD*)buff = 4096;
         break;
     case GET_SECTOR_COUNT:
-		*(DWORD*)buff =  FLASH_BLK_NBR;
+		*(DWORD*)buff =  4096;
 		break;			
     default:
 		res = RES_PARERR;

@@ -43,3 +43,7 @@ firmware\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
 firmware\user_diskio.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h
 firmware\user_diskio.o: ../../code/lib/Flash.h
+firmware\user_diskio.o: ../../code/lib/w25q128.h
+firmware\user_diskio.o: ../Core/Inc/spi.h
+firmware\user_diskio.o: ../Core/Inc/usart.h
+firmware\user_diskio.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

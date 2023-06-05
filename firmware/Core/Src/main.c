@@ -98,6 +98,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_RTC_Init();
   MX_SPI1_Init();
+  HAL_ADCEx_Calibration_Start(&hadc1);
   /* USER CODE BEGIN 2 */
     if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) != RESET)//检查并检查系统是否从待机模式恢复
   {
