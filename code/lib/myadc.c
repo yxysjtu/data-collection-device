@@ -20,7 +20,7 @@ int ADC_GetVal(uint32_t channel){ //36k
 	HAL_ADC_PollForConversion(&hadc1, 1000);
 	int val = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop(&hadc1);
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
     return val;
 	/*	//…Ë÷√◊™ªª–Ú¡–	  	
 	uint32_t buf = 0;

@@ -7,12 +7,13 @@ int sht_state;
 uint8_t dat[6]={0};
 
 //bh1750
-uint32_t light = 0;
+int32_t light = 0;
 int bh1750_state;
 
 //mic
 #define SAMPLE_N 1000
 uint32_t sound_v, vref;
+float vbat;
 int16_t raw_sound[SAMPLE_N];
 
 int32_t sound_level = 0, sound_level0 = 0;
@@ -146,6 +147,7 @@ void read_sensor(){
 		light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
 	}
 	light /= 5;
+	if(bh1750_state == 1) light = -1;
 	
 	uint16_t vref_cal = 1604;
 	db = 0;
@@ -216,49 +218,68 @@ void oled_show(){
 	OLED_ShowStr(0,6,(uint8_t*)str,2);
 }
 
+void led_fastblink(){
+	for(int i = 0; i < 4; i++){
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(100);
+	}
+}
 void setup(){
+	/*while(1){
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(500);	
+	}*/
 	SHT30_Reset();
 	SHT30_Init();
 	
-	//OLED_Init();
-	//OLED_CLS();
+	/*OLED_Init();
+	OLED_CLS();
 	while(1){
-			read_sensor();
-		//oled_show();
+			//read_sensor();
+		oled_show();
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		HAL_Delay(500);	
-	}
+		//HAL_Delay(500);	
+	}*/
+	
+	//usb on
+	fr = f_mount(&fs, path, 1);
 	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		check_flag = 1;
-		fr = f_mount(&fs, path, 1);
 		fr = f_stat("0:device.cfg", &info);
 	}
 	//RTC_Set(2023,6,1,23,12,0);
 		
 	read_sensor();
-
 	fs_write();
 	
-	if(!OLED_Init()){
-		OLED_CLS();
-		oled_show();
-		oled_init = 1;
+	//use battery
+	if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
+		fr = f_write(&file, &vref, 4,(void *)&br);
+		fr = f_close(&file);
 	}
 	
 	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
 	
-
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		//read vbat
+		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
+		uint8_t numofread;
+		fr = f_read(&file, &vref, 4, (UINT*)&numofread);
+		fr = f_close(&file);
+		vbat = 4096/(float)vref * 1.5;
+		if(vbat < 2.5){
+			led_fastblink();
+		}
 		HAL_Delay(2000);
-		read_sensor();
-		if(oled_init) oled_show();
+		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		//read_sensor();
+		//if(oled_init) oled_show();
+		
 		fr = f_mount(&fs, path, 1);
 		fr = f_stat("0:device.cfg", &info2);
 		if(info2.fdate != info.fdate || info2.ftime != info.ftime){
-			for(int i = 0; i < 4; i++){
-				HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-				HAL_Delay(100);
-			}
+			led_fastblink();
 			wsec = info2.ftime&0x1f;
 			wmin = (info2.ftime>>5)&0x3f;
 			whour = (info2.ftime>>11)&0x1f;
