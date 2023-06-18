@@ -59,8 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define FLASH_CS_Pin GPIO_PIN_4
 #define FLASH_CS_GPIO_Port GPIOA
-#define DONE_Pin GPIO_PIN_4
-#define DONE_GPIO_Port GPIOB
+#define VCONT_Pin GPIO_PIN_4
+#define VCONT_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_5
 #define LED_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

@@ -11,10 +11,12 @@ uint32_t light = 0;
 int bh1750_state;
 
 //mic
-uint32_t sound_v;
-int raw_sound;
+#define SAMPLE_N 1000
+uint32_t sound_v, vref;
+int16_t raw_sound[SAMPLE_N];
+
 int32_t sound_level = 0, sound_level0 = 0;
-float db = 30, k = 22.3, offset = -32, db0;
+float db = 30, k = 22.3, offset = -32, db0, vn;
 
 //flash
 //uint8_t txbuf[4096];
@@ -33,11 +35,9 @@ uint8_t check_flag = 0;
 
 //oled
 char str[50]={'\0'};
+uint8_t oled_init = 0;
 
 //RTC
-//RTC_TimeTypeDef time = {0};
-//RTC_DateTypeDef date = {0};
-//RTC_AlarmTypeDef alarm = {0};
 uint32_t rtc_cnt;
 int wsec,wmin,whour,wday,wmon,wyear;
 uint32_t time_sep = 3600;
@@ -53,9 +53,7 @@ uint32_t getsize(char *s){
 	return i + 1;
 }
 
-//TODO write err message in txt file
-//TODO if wrong data write NULL
-//TODO read config file(auto calibrate time script)
+
 
 FRESULT fs_write(){
     uint32_t size = 0;
@@ -68,8 +66,7 @@ FRESULT fs_write(){
         fr = f_mount(&fs, path, 1);
     }
 
-    //HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
-	//HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);  
+ 
 	RTC_Get();
 
     memset(buf,0,sizeof(buf));
@@ -110,6 +107,24 @@ FRESULT fs_write(){
 
     return fr;
 }
+int write_n = 0;
+void write_data(int n){
+	char buf[10];
+	uint32_t size = 0;
+	fr = f_mount(&fs, path, 1);
+	sprintf((char *)buf,"0:data.txt");
+	fr = f_open(&file,buf, FA_OPEN_ALWAYS | FA_WRITE);
+	size = f_size(&file);
+	//if(size > 0 && n > 1)
+		fr = f_lseek(&file, size);
+	for(int i = 0; i < SAMPLE_N; i++){
+		memset(buf,0,sizeof(buf));
+        sprintf((char *)buf,"%d,\r\n", raw_sound[i]);
+        fr = f_write(&file, buf, getsize(buf),(void *)&br);
+	}
+	fr = f_close(&file);
+	
+}
 
 
 void read_sensor(){
@@ -122,32 +137,51 @@ void read_sensor(){
 		try_n--;
 	}
 	
+	light = 0;
+	for(int j = 0; j < 5; j++){
+		bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
+		HAL_Delay(200);
+		bh1750_state = BH1750_Read_Dat(dat);
+		//light = BH1750_Dat_To_Lux(dat);
+		light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
+	}
+	light /= 5;
 	
-	bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
-	HAL_Delay(200);
-	bh1750_state = BH1750_Read_Dat(dat);
-	//light = BH1750_Dat_To_Lux(dat);
-	light = (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
-	
+	uint16_t vref_cal = 1604;
 	db = 0;
 	for(int j = 0; j < 3; j++){
+		for(int k = 0; k < 5; k++)
+			vref += ADC_GetVal(ADC_CHANNEL_VREFINT);
+		vref /= 5;
+		
+		for(int i = 0; i < SAMPLE_N; i++){
+			raw_sound[i] = ADC_GetVal(ADC_CHANNEL_1);
+		}
+		
+		//filter
+		for(int i = 0; i < SAMPLE_N - 1; i++){
+			/*filter_sound[i] = 0.634 * raw_sound[i] + 0.634 * raw_sound[i - 1]
+							-0.2679 * filter_sound[i - 1];*/
+			raw_sound[i] = (raw_sound[i] + raw_sound[i + 1]) / 2;
+		}
+		//calculate dc
 		sound_v = 0;
-		for(int i = 0; i < 1000; i++){
-			sound_v += ADC_GetVal(ADC_CHANNEL_1);
+		for(int i = 0; i < SAMPLE_N; i++){
+			sound_v += raw_sound[i];
 		}
-		sound_v = sound_v / 1000;
-		sound_level = 0;
-		sound_level0 = 0;
-		for(int i = 0; i < 1000; i++){
-			raw_sound = ADC_GetVal(ADC_CHANNEL_1) - sound_v;
-			//raw_sound *= raw_sound;
-			if(raw_sound < 0) raw_sound = -raw_sound;
-			sound_level0 = sound_level0 * 0.9 + raw_sound * 0.1;
-			sound_level += sound_level0;
+		sound_v /= SAMPLE_N;
+		db0 = 0;
+		for(int i = 0; i < SAMPLE_N; i++){
+			raw_sound[i] -= sound_v;
+			//energy
+			db0 += (float)raw_sound[i] * raw_sound[i];
 		}
-		sound_level /= 1000;
-		//db0 = log((double)sound_level);
-		db0 = k * log((double)sound_level) + offset;
+		db += 4.047*log(db0 / vref / vref * 2000)+29.4084;
+		
+		
+
+		/*//db0 = log((double)sound_level);
+		db0 = k * log((double)sound_level / vref * vref_cal / vref * vref_cal) + offset;
 		//if(db0 < 40) db0 -= 2;
 		if(db0 > 70){
 			db0 = -0.003 * db0*db0 + 0.92 * db0 +12;
@@ -159,7 +193,8 @@ void read_sensor(){
 			db0 = 3 * db0 - 77;
 		}
 		db += db0;
-		//db = db0 * 10;
+		//db = db0 * 10;*/
+		//if(write_n++ < 3) write_data(write_n);
 	}
 	db /= 3;
 }
@@ -171,20 +206,34 @@ void oled_show(){
 	OLED_ShowStr(0,0,(uint8_t*)str,2);
 	sprintf(str, "light:%d", light);
 	OLED_ShowStr(0,2,(uint8_t*)str,2);
+	//sprintf(str, "s1:%.1f", (float)sound_level/vref*1604);
+	//OLED_ShowStr(0,2,(uint8_t*)str,2);
 	sprintf(str, "sound:%.1f", db);
 	OLED_ShowStr(0,4,(uint8_t*)str,2);
+	//sprintf(str, "s:%d", sound_level);
+	//OLED_ShowStr(0,2,(uint8_t*)str,2);
+	sprintf(str, "vref:%d", vref);
+	OLED_ShowStr(0,6,(uint8_t*)str,2);
 }
 
 void setup(){
+	SHT30_Reset();
+	SHT30_Init();
+	
+	//OLED_Init();
+	//OLED_CLS();
+	while(1){
+			read_sensor();
+		//oled_show();
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(500);	
+	}
 	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		check_flag = 1;
 		fr = f_mount(&fs, path, 1);
 		fr = f_stat("0:device.cfg", &info);
 	}
 	//RTC_Set(2023,6,1,23,12,0);
-	
-	SHT30_Reset();
-	SHT30_Init();
 		
 	read_sensor();
 
@@ -193,17 +242,16 @@ void setup(){
 	if(!OLED_Init()){
 		OLED_CLS();
 		oled_show();
+		oled_init = 1;
 	}
 	
-	while(1){
-		oled_show();
-	}
 	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
 	
 
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
-		HAL_Delay(4000);
-		oled_show();
+		HAL_Delay(2000);
+		read_sensor();
+		if(oled_init) oled_show();
 		fr = f_mount(&fs, path, 1);
 		fr = f_stat("0:device.cfg", &info2);
 		if(info2.fdate != info.fdate || info2.ftime != info.ftime){
