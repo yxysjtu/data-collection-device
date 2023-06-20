@@ -236,6 +236,7 @@ int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */
+	if(w25q128_busy) return USBD_FAIL;
 	w25q128_busy = 1;
 	//Flash_Read(buf, blk_addr, blk_len);
 	//W25Q128_Readblk(buf, blk_addr, blk_len);
@@ -253,6 +254,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
+	if(w25q128_busy) return USBD_FAIL;
 	w25q128_busy = 1;
 	//uint8_t state = Flash_Write(buf, blk_addr, blk_len);
 	//W25Q128_Writeblk(buf, blk_addr, blk_len);

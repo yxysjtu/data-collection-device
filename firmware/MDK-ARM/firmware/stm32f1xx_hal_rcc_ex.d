@@ -27,10 +27,13 @@ firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
+firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_iwdg.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h

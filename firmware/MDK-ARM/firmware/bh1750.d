@@ -30,10 +30,13 @@ firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
+firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_iwdg.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\bh1750.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h

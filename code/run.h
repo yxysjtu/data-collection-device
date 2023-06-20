@@ -262,6 +262,7 @@ void setup(){
 	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
 	
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		RTC_Get();
 		//read vbat
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
 		uint8_t numofread;

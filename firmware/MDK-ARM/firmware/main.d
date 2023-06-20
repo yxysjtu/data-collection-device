@@ -28,10 +28,13 @@ firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
+firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_iwdg.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h
 firmware\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h
@@ -45,8 +48,10 @@ firmware\main.o: ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h
 firmware\main.o: ../Middlewares/Third_Party/FatFs/src/diskio.h
 firmware\main.o: ../FATFS/Target/user_diskio.h
 firmware\main.o: ../Core/Inc/i2c.h
+firmware\main.o: ../Core/Inc/iwdg.h
 firmware\main.o: ../Core/Inc/rtc.h
 firmware\main.o: ../Core/Inc/spi.h
+firmware\main.o: ../Core/Inc/tim.h
 firmware\main.o: ../Core/Inc/usart.h
 firmware\main.o: ../USB_DEVICE/App/usb_device.h
 firmware\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
