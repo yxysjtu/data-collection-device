@@ -23,7 +23,8 @@ float db = 30, k = 22.3, offset = -32, db0, vn;
 //uint8_t txbuf[4096];
 //uint8_t rxbuf[4096];
 uint16_t flash_id = 0;
-
+extern int usb_write;
+int stat_read = 0;
 
 //fatfs
 char* path= "0:";
@@ -143,8 +144,8 @@ void read_sensor(){
 		bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
 		HAL_Delay(200);
 		bh1750_state = BH1750_Read_Dat(dat);
-		//light = BH1750_Dat_To_Lux(dat);
-		light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
+		light += BH1750_Dat_To_Lux(dat);
+		//light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
 	}
 	light /= 5;
 	if(bh1750_state == 1) light = -1;
@@ -246,6 +247,8 @@ void setup(){
 	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		check_flag = 1;
 		fr = f_stat("0:device.cfg", &info);
+		info2.ftime = info.ftime;
+		info2.fdate = info.fdate;
 	}
 	//RTC_Set(2023,6,1,23,12,0);
 		
@@ -257,39 +260,45 @@ void setup(){
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
 		fr = f_write(&file, &vref, 4,(void *)&br);
 		fr = f_close(&file);
-	}
-	
-	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
-	
-	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
-		RTC_Get();
+	}else{
 		//read vbat
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
 		uint8_t numofread;
 		fr = f_read(&file, &vref, 4, (UINT*)&numofread);
 		fr = f_close(&file);
 		vbat = 4096/(float)vref * 1.5;
+	}
+	
+	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
+	
+	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		RTC_Get();
 		if(vbat < 2.5){
 			led_fastblink();
 		}
-		HAL_Delay(2000);
+		HAL_Delay(100);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		//read_sensor();
 		//if(oled_init) oled_show();
 		
-		fr = f_mount(&fs, path, 1);
-		fr = f_stat("0:device.cfg", &info2);
-		if(info2.fdate != info.fdate || info2.ftime != info.ftime){
-			led_fastblink();
-			wsec = info2.ftime&0x1f;
-			wmin = (info2.ftime>>5)&0x3f;
-			whour = (info2.ftime>>11)&0x1f;
-			wday = (info2.fdate)&0x1f;
-			wmon = (info2.fdate>>5)&0x0f;
-			wyear = (info2.fdate>>9) + 1980;
-			RTC_Set(wyear,wmon,wday,whour,wmin,wsec);
-			info.ftime = info2.ftime;
-			info.fdate = info2.fdate;
+		if(usb_write){
+			usb_write = 0;
+			stat_read = 1;
+			fr = f_mount(&fs, path, 1);
+			fr = f_stat("0:device.cfg", &info2);
+			stat_read = 0;
+			if(fr == FR_OK && (info2.fdate != info.fdate || info2.ftime != info.ftime)){
+				led_fastblink();
+				wsec = info2.ftime&0x1f;
+				wmin = (info2.ftime>>5)&0x3f;
+				whour = (info2.ftime>>11)&0x1f;
+				wday = (info2.fdate)&0x1f;
+				wmon = (info2.fdate>>5)&0x0f;
+				wyear = (info2.fdate>>9) + 1980;
+				RTC_Set(wyear,wmon,wday,whour,wmin,wsec);
+				info.ftime = info2.ftime;
+				info.fdate = info2.fdate;
+			}
 		}
 	}
 	fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_READ);

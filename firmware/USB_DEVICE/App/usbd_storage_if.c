@@ -24,6 +24,9 @@
 /* USER CODE BEGIN INCLUDE */
 #include "Flash.h"
 #include "w25q128.h"
+
+int usb_write = 0;
+extern int stat_read;
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -224,6 +227,7 @@ int8_t STORAGE_IsReady_FS(uint8_t lun)
 int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 {
   /* USER CODE BEGIN 5 */
+	//return w25q128_busy;
   return (USBD_OK);
   /* USER CODE END 5 */
 }
@@ -237,6 +241,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
 	if(w25q128_busy) return USBD_FAIL;
+	if(stat_read) return USBD_FAIL;
 	w25q128_busy = 1;
 	//Flash_Read(buf, blk_addr, blk_len);
 	//W25Q128_Readblk(buf, blk_addr, blk_len);
@@ -255,12 +260,15 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 {
   /* USER CODE BEGIN 7 */
 	if(w25q128_busy) return USBD_FAIL;
+	if(stat_read) return USBD_FAIL;
+	usb_write = 0;
 	w25q128_busy = 1;
 	//uint8_t state = Flash_Write(buf, blk_addr, blk_len);
 	//W25Q128_Writeblk(buf, blk_addr, blk_len);
 	Erase_Write_data_Sector(blk_addr*4096, blk_len*4096);
 	Write_Page(buf, blk_addr * 4096, blk_len * 4096);
 	w25q128_busy = 0;
+	usb_write = 1;
     //return state;
 	return USBD_OK;
   /* USER CODE END 7 */
