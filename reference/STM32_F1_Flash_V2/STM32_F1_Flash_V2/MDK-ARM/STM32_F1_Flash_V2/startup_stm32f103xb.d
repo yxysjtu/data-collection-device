@@ -1,1 +1,0 @@
-stm32_f1_flash_v2\startup_stm32f103xb.o: startup_stm32f103xb.s
