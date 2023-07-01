@@ -1,6 +1,8 @@
 #include "include.h"
 #include "math.h"
 
+//#define TEST_HARDWARE
+
 //sht30
 float temperature = 0, humidity = 0;
 int sht_state;
@@ -41,7 +43,7 @@ uint8_t oled_init = 0;
 //RTC
 uint32_t rtc_cnt;
 int wsec,wmin,whour,wday,wmon,wyear;
-uint32_t time_sep = 3600;
+uint32_t time_sep = 3600, reset_time = 0;
 extern uint8_t usb_state;
 
 int testt = 0;
@@ -61,11 +63,11 @@ FRESULT fs_write(){
     char buf[50];
 
     fr = f_mount(&fs, path, 1);
-    if(fr == FR_NO_FILESYSTEM){
+    /*if(fr == FR_NO_FILESYSTEM){
         fr = f_mkfs(path, 0, 0);
         f_mount(NULL, path, 1);
         fr = f_mount(&fs, path, 1);
-    }
+    }*/
 
  
 	RTC_Get();
@@ -77,7 +79,7 @@ FRESULT fs_write(){
         size = f_size(&file);
         if(size == 0){ //create
             memset(buf,0,sizeof(buf));
-            sprintf((char *)buf,"%s,%s,%s,%s,%s\r\n","Time","temperature","humidity","light","sound");
+            sprintf((char *)buf,"%s,%s,%s,%s,%s\r\n","Time","Temperature","Humidity","Light","Sound");
             fr= f_write(&file, buf, getsize(buf),(void *)&br);
             if(fr != FR_OK){
                 printf("Title write process error code is %d...\r\n",fr);  
@@ -127,6 +129,12 @@ void write_data(int n){
 	
 }
 
+void led_fastblink(){
+	for(int i = 0; i < 4; i++){
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(100);
+	}
+}
 
 void read_sensor(){
 	temperature = 0;
@@ -138,18 +146,13 @@ void read_sensor(){
 		try_n--;
 	}
 	
-	light = 0;
-	for(int j = 0; j < 5; j++){
-		bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
-		HAL_Delay(200);
-		bh1750_state = BH1750_Read_Dat(dat);
-		light += BH1750_Dat_To_Lux(dat);
-		//light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
-	}
-	light /= 5;
+	bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
+	HAL_Delay(200);
+	bh1750_state = BH1750_Read_Dat(dat);
+	light = BH1750_Dat_To_Lux(dat);
+	//light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
 	if(bh1750_state == 1) light = -1;
 	
-	uint16_t vref_cal = 1604;
 	db = 0;
 	for(int j = 0; j < 3; j++){
 		for(int k = 0; k < 5; k++)
@@ -162,8 +165,6 @@ void read_sensor(){
 		
 		//filter
 		for(int i = 0; i < SAMPLE_N - 1; i++){
-			/*filter_sound[i] = 0.634 * raw_sound[i] + 0.634 * raw_sound[i - 1]
-							-0.2679 * filter_sound[i - 1];*/
 			raw_sound[i] = (raw_sound[i] + raw_sound[i + 1]) / 2;
 		}
 		//calculate dc
@@ -179,24 +180,6 @@ void read_sensor(){
 			db0 += (float)raw_sound[i] * raw_sound[i];
 		}
 		db += 4.047*log(db0 / vref / vref * 2000)+29.4084;
-		
-		
-
-		/*//db0 = log((double)sound_level);
-		db0 = k * log((double)sound_level / vref * vref_cal / vref * vref_cal) + offset;
-		//if(db0 < 40) db0 -= 2;
-		if(db0 > 70){
-			db0 = -0.003 * db0*db0 + 0.92 * db0 +12;
-		}else if(db0 > 43){
-			//db0 = -0.0037 * db0*db0 + 1.0759 * db0 +15.6999;
-			db0 = -0.0037 * db0*db0 + 0.91 * db0 +15.2;
-		}else if(db0 > 37){
-			//db0 = 1.8 * db0 - 26.4;
-			db0 = 3 * db0 - 77;
-		}
-		db += db0;
-		//db = db0 * 10;*/
-		//if(write_n++ < 3) write_data(write_n);
 	}
 	db /= 3;
 }
@@ -208,27 +191,20 @@ void oled_show(){
 	OLED_ShowStr(0,0,(uint8_t*)str,2);
 	sprintf(str, "light:%d", light);
 	OLED_ShowStr(0,2,(uint8_t*)str,2);
-	//sprintf(str, "s1:%.1f", (float)sound_level/vref*1604);
-	//OLED_ShowStr(0,2,(uint8_t*)str,2);
 	sprintf(str, "sound:%.1f", db);
 	OLED_ShowStr(0,4,(uint8_t*)str,2);
-	//sprintf(str, "s:%d", sound_level);
-	//OLED_ShowStr(0,2,(uint8_t*)str,2);
 	sprintf(str, "vref:%d", vref);
 	OLED_ShowStr(0,6,(uint8_t*)str,2);
 }
 
-void led_fastblink(){
-	for(int i = 0; i < 4; i++){
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		HAL_Delay(100);
-	}
-}
 void setup(){
-	/*while(1){
+	#ifdef TEST_HARDWARE
+	while(1){
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		HAL_Delay(500);	
-	}*/
+	}
+	#endif
+	
 	SHT30_Reset();
 	SHT30_Init();
 
@@ -236,17 +212,16 @@ void setup(){
 		
 	fr = f_mount(&fs, path, 1);
 	if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){//use battery
+		for(int i = 0; i < 2; i++)
 		read_sensor();
 		fs_write();
-		
+
+		//write vbat
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
 		fr = f_write(&file, &vref, 4,(void *)&br);
-		fr = f_close(&file);
-	}else{//usb on
-		fr = f_stat("0:device.cfg", &info);
-		info2.ftime = info.ftime;
-		info2.fdate = info.fdate;
-		
+		fr = f_close(&file);		
+
+	}else{//usb on	
 		//read vbat
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
 		uint8_t numofread;
@@ -257,43 +232,44 @@ void setup(){
 	
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		RTC_Get();
-		if(vbat < 2.5){
+		if(vbat <= 2.5){
 			led_fastblink();
 		}
-		HAL_Delay(1000);
+		//HAL_Delay(500);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		//read_sensor();
+		read_sensor();
 		//if(oled_init) oled_show();
-		
-		if(usb_write){
-			usb_write = 0;
-			stat_read = 1;
-			fr = f_mount(&fs, path, 1);
-			fr = f_stat("0:device.cfg", &info2);
-			stat_read = 0;
-			if(fr == FR_OK && (info2.fdate != info.fdate || info2.ftime != info.ftime)){
-				led_fastblink();
-				wsec = info2.ftime&0x1f;
-				wmin = (info2.ftime>>5)&0x3f;
-				whour = (info2.ftime>>11)&0x1f;
-				wday = (info2.fdate)&0x1f;
-				wmon = (info2.fdate>>5)&0x0f;
-				wyear = (info2.fdate>>9) + 1980;
-				RTC_Set(wyear,wmon,wday,whour,wmin,wsec);
-				info.ftime = info2.ftime;
-				info.fdate = info2.fdate;
-			}
-		}
 	}
 	//close sensor
 	HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
 	
+	//read configuration
 	fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_READ);
 	uint8_t numofread;
 	fr = f_read(&file, &time_sep, 4, (UINT*)&numofread);
+	fr = f_read(&file, &reset_time, 4, (UINT*)&numofread);
 	fr = f_close(&file);
+		
+	if(reset_time == 0xffffffff){//new configuration flag
+		reset_time = 0;
+		fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_WRITE);
+		fr = f_write(&file, &time_sep, 4, (UINT*)&numofread);
+		fr = f_write(&file, &reset_time, 4, (UINT*)&numofread);
+		fr = f_close(&file);
+		fr = f_stat("0:device.cfg", &info2);
+		if(fr == FR_OK){
+			led_fastblink();
+			wsec = info2.ftime&0x1f;
+			wmin = (info2.ftime>>5)&0x3f;
+			whour = (info2.ftime>>11)&0x1f;
+			wday = (info2.fdate)&0x1f;
+			wmon = (info2.fdate>>5)&0x0f;
+			wyear = (info2.fdate>>9) + 1980;
+			RTC_Set(wyear,wmon,wday,whour,wmin,wsec);
+		}
+	}
 	RTC_SetAlarm(time_sep);
-	
+	//enter standby mode
     HAL_PWR_DisableWakeUpPin(PWR_WAKEUP_PIN1);//禁用所有使用的唤醒源:PWR_WAKEUP_PIN1 connected to PA.00
     __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);//清除所有相关的唤醒标志
     HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);//启用连接到PA.00的WakeUp Pin
