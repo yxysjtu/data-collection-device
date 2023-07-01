@@ -1,4 +1,5 @@
-## Datalogger
+# Datalogger
+---
 
 This is a picture of the device supporting low frequency sensor data-logging with STM32F103RGT6.
 ![datalogger](/document/imgs/device.jpg) 
@@ -28,7 +29,8 @@ How to use:
 ![data format](/document/imgs/ui3.jpg) 
 
 
-### Hardware Design
+## Hardware Design
+---
 #### Schematic
 ![Controller](/document/imgs/sch1.png) 
 ![Sensors](/document/imgs/sch2.png) 
@@ -44,6 +46,7 @@ How to use:
 ![bottom](/document/imgs/bottom.jpg) 
 
 ### Background
+---
 For background on / motivation for this project, please see https://opendeved.net/programmes/ilce-in-tanzania/.
 
 Reference: (same project with different design) https://github.com/bablokb/pcb-pico-datalogger#pico-datalogger-with-integrated-power-management
