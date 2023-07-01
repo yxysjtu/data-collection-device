@@ -13,7 +13,7 @@ Core functions:
 Specs:
 * 2 AA batteries with 6000h life expectancy. (suppose 50uA in standby mode and 40mA in active mode, the logging time is 2s, 1h sampling period, 1000mAh battery)
 * can store up to 45000 records before running out of battery charge
-* support measurement of sound(35~100dB), light(0~65535lux), temperature(0~85 degree in celsius), humidity(0~100%)
+* support measurement of sound(35-100dB), light(0-65535lux), temperature(0-85 degree in celsius), humidity(0-100%)
 
 How to use:
 1. Open the switch on the device and it will start periodically collecting data.
