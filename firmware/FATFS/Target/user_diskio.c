@@ -121,7 +121,9 @@ DRESULT USER_read (
 	//return Flash_Read((uint8_t*)buff, sector, count);
 	while(w25q128_busy);
 	w25q128_busy = 1;
+	//__disable_irq();
 	Read_W25Q128_data((uint8_t*)buff, sector * 4096, count * 4096);
+	//__enable_irq();
 	w25q128_busy = 0;
 	return RES_OK;
   /* USER CODE END READ */
@@ -147,8 +149,10 @@ DRESULT USER_write (
   /* USER CODE HERE */
 	while(w25q128_busy);
 	w25q128_busy = 1;
+	//__disable_irq();
 	Erase_Write_data_Sector(sector*4096, count*4096);
 	Write_Page((uint8_t*)buff, sector * 4096, count * 4096);
+	//__enable_irq();
 	w25q128_busy = 0;
 	return RES_OK;
 	//return Flash_Write((uint8_t*)buff, sector, count);

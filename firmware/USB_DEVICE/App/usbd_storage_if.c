@@ -214,7 +214,8 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 int8_t STORAGE_IsReady_FS(uint8_t lun)
 {
   /* USER CODE BEGIN 4 */
-  return w25q128_busy;
+  if(w25q128_busy) return USBD_FAIL;
+  return USBD_OK;
   //return (USBD_OK);
   /* USER CODE END 4 */
 }

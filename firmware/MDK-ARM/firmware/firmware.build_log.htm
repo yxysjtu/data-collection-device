@@ -36,13 +36,15 @@ compiling main.c...
   void Erase_one_Sector(uint32_t Address);
 ../../code/lib/oled.h(30): warning:  #1-D: last line of file ends without a newline
   #endif
-../../code/run.h(153): warning:  #177-D: variable "vref_cal"  was declared but never referenced
+../../code/run.h(152): warning:  #177-D: variable "vref_cal"  was declared but never referenced
   	uint16_t vref_cal = 1604;
-../Core/Src/main.c: 5 warnings, 0 errors
+../../code/run.h(289): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
+../Core/Src/main.c: 6 warnings, 0 errors
 linking...
 Program Size: Code=51244 RO-data=688 RW-data=484 ZI-data=22548  
 FromELF: creating hex file...
-"firmware\firmware.axf" - 0 Error(s), 5 Warning(s).
+"firmware\firmware.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -65,7 +67,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

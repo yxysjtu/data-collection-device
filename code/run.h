@@ -33,7 +33,6 @@ FRESULT fr;
 FIL file;
 UINT br;
 FILINFO info, info2;
-uint8_t check_flag = 0;
 
 //oled
 char str[50]={'\0'};
@@ -232,35 +231,22 @@ void setup(){
 	}*/
 	SHT30_Reset();
 	SHT30_Init();
-	
-	/*OLED_Init();
-	OLED_CLS();
-	while(1){
-			//read_sensor();
-		oled_show();
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		//HAL_Delay(500);	
-	}*/
-	
-	//usb on
-	fr = f_mount(&fs, path, 1);
-	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
-		check_flag = 1;
-		fr = f_stat("0:device.cfg", &info);
-		info2.ftime = info.ftime;
-		info2.fdate = info.fdate;
-	}
+
 	//RTC_Set(2023,6,1,23,12,0);
 		
-	read_sensor();
-	fs_write();
-	
-	//use battery
-	if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+	fr = f_mount(&fs, path, 1);
+	if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){//use battery
+		read_sensor();
+		fs_write();
+		
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
 		fr = f_write(&file, &vref, 4,(void *)&br);
 		fr = f_close(&file);
-	}else{
+	}else{//usb on
+		fr = f_stat("0:device.cfg", &info);
+		info2.ftime = info.ftime;
+		info2.fdate = info.fdate;
+		
 		//read vbat
 		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
 		uint8_t numofread;
@@ -269,14 +255,12 @@ void setup(){
 		vbat = 4096/(float)vref * 1.5;
 	}
 	
-	//HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
-	
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		RTC_Get();
 		if(vbat < 2.5){
 			led_fastblink();
 		}
-		HAL_Delay(100);
+		HAL_Delay(1000);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		//read_sensor();
 		//if(oled_init) oled_show();
@@ -301,6 +285,9 @@ void setup(){
 			}
 		}
 	}
+	//close sensor
+	HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
+	
 	fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_READ);
 	uint8_t numofread;
 	fr = f_read(&file, &time_sep, 4, (UINT*)&numofread);
