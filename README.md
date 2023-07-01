@@ -46,7 +46,9 @@ How to use:
 
 ## Firmware
 The project is developed using CubeMX and KEIL, using STM32 HAL library.
+
 The main code is in /code/run.h
+
 All custom library is in /code/lib/
 The project file is in /firmware/
 
