@@ -30,14 +30,14 @@ How to use:
 
 
 ## Hardware Design
-#### Schematic
+### Schematic
 ![Controller](/document/imgs/sch1.png) 
 ![Sensors](/document/imgs/sch2.png) 
 
-#### PCB
+### PCB
 ![PCB](/document/imgs/pcb.jpg) 
 
-#### Mechanical Design
+### Mechanical Design
 * Front panel using laser cutting PMMA
 ![panel](/document/imgs/panel.jpg) 
 * 3D printed body part and bottom cover
