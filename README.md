@@ -2,7 +2,7 @@
 
 This is a picture of the device supporting low frequency sensor data-logging with STM32F103RGT6.
 ![datalogger](/document/imgs/device4.jpg) 
-![datalogger](/document/imgs/device3.jpg) 
+![datalogger](/document/imgs/device5.jpg) 
 
 
 Core functions:
