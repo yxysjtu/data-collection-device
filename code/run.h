@@ -238,7 +238,7 @@ void setup(){
 		//HAL_Delay(500);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		read_sensor();
-		//if(oled_init) oled_show();
+		//oled_show();
 	}
 	//close sensor
 	HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
