@@ -50,7 +50,7 @@ The main code is in /code/run.h
 All custom library is in /code/lib/
 The project file is in /firmware/
 
-### Background
+## Background
 For background on / motivation for this project, please see https://opendeved.net/programmes/ilce-in-tanzania/.
 
 Reference: (same project with different design) https://github.com/bablokb/pcb-pico-datalogger#pico-datalogger-with-integrated-power-management
