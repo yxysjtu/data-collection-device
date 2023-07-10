@@ -31,7 +31,7 @@ int stat_read = 0;
 //fatfs
 char* path= "0:";
 FATFS fs;
-FRESULT fr;
+FRESULT fr, cfg_stat;
 FIL file;
 UINT br;
 FILINFO info, info2;
@@ -147,14 +147,14 @@ void read_sensor(){
 	}
 	
 	bh1750_state = BH1750_Send_Cmd(ONCE_H_MODE);
-	HAL_Delay(200);
+	HAL_Delay(300);
 	bh1750_state = BH1750_Read_Dat(dat);
 	light = BH1750_Dat_To_Lux(dat);
 	//light += (uint32_t)(1.1887 * (float)BH1750_Dat_To_Lux(dat) - 5.068);	
 	if(bh1750_state == 1) light = -1;
 	
 	db = 0;
-	for(int j = 0; j < 3; j++){
+	for(int j = 0; j < 1; j++){
 		for(int k = 0; k < 5; k++)
 			vref += ADC_GetVal(ADC_CHANNEL_VREFINT);
 		vref /= 5;
@@ -181,7 +181,8 @@ void read_sensor(){
 		}
 		db += 4.047*log(db0 / vref / vref * 2000)+29.4084;
 	}
-	db /= 3;
+	db /= 1;
+	db = db * 1.2592 - 5.9167;
 }
 
 void oled_show(){
@@ -208,56 +209,42 @@ void setup(){
 	SHT30_Reset();
 	SHT30_Init();
 
-	//RTC_Set(2023,6,1,23,12,0);
-		
-	fr = f_mount(&fs, path, 1);
-	if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){//use battery
-		for(int i = 0; i < 2; i++)
-		read_sensor();
-		fs_write();
-
-		//write vbat
-		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
-		fr = f_write(&file, &vref, 4,(void *)&br);
-		fr = f_close(&file);		
-
-	}else{//usb on	
-		//read vbat
-		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
-		uint8_t numofread;
-		fr = f_read(&file, &vref, 4, (UINT*)&numofread);
-		fr = f_close(&file);
-		vbat = 4096/(float)vref * 1.5;
-	}
-	
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 		RTC_Get();
-		if(vbat <= 2.5){
-			led_fastblink();
-		}
 		//HAL_Delay(500);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		read_sensor();
 		//oled_show();
 	}
-	//close sensor
-	HAL_GPIO_WritePin(VCONT_GPIO_Port, VCONT_Pin, 1);
+	//RTC_Set(2023,6,1,23,12,0);
 	
 	//read configuration
+	stat_read = 1;
+	fr = f_mount(&fs, path, 1);
+	cfg_stat = f_stat("0:device.cfg", &info2);
 	fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_READ);
 	uint8_t numofread;
-	fr = f_read(&file, &time_sep, 4, (UINT*)&numofread);
-	fr = f_read(&file, &reset_time, 4, (UINT*)&numofread);
+	uint8_t buf[8];
+	fr = f_read(&file, &buf, 8, (UINT*)&numofread);
+	if(fr == FR_OK){
+		time_sep = *(uint32_t*)(buf+0);
+		reset_time = *(uint32_t*)(buf+4);
+	}
 	fr = f_close(&file);
+	
+	//write battery voltage
+	fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
+	fr = f_write(&file, &vref, 4, (UINT*)&numofread);
+	fr = f_close(&file);
+	
+	//write data into csv file
+	//for(int i = 0; i < 5; i++){
+	read_sensor();
+	fs_write();
+	//}db=0;fs_write();
 		
 	if(reset_time == 0xffffffff){//new configuration flag
-		reset_time = 0;
-		fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_WRITE);
-		fr = f_write(&file, &time_sep, 4, (UINT*)&numofread);
-		fr = f_write(&file, &reset_time, 4, (UINT*)&numofread);
-		fr = f_close(&file);
-		fr = f_stat("0:device.cfg", &info2);
-		if(fr == FR_OK){
+		if(cfg_stat == FR_OK){
 			led_fastblink();
 			wsec = info2.ftime&0x1f;
 			wmin = (info2.ftime>>5)&0x3f;
@@ -266,8 +253,25 @@ void setup(){
 			wmon = (info2.fdate>>5)&0x0f;
 			wyear = (info2.fdate>>9) + 1980;
 			RTC_Set(wyear,wmon,wday,whour,wmin,wsec);
+			
+			reset_time = 0;
+			fr = f_mount(&fs, path, 1);
+			fr = f_open(&file,"0:device.cfg", FA_OPEN_ALWAYS | FA_WRITE);
+			fr = f_write(&file, &time_sep, 4, (UINT*)&numofread);
+			fr = f_write(&file, &reset_time, 4, (UINT*)&numofread);
+			fr = f_close(&file);
 		}
 	}
+	stat_read = 0;
+	
+	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		RTC_Get();
+		//HAL_Delay(500);
+		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		read_sensor();
+		//oled_show();
+	}
+	
 	RTC_SetAlarm(time_sep);
 	//enter standby mode
     HAL_PWR_DisableWakeUpPin(PWR_WAKEUP_PIN1);//禁用所有使用的唤醒源:PWR_WAKEUP_PIN1 connected to PA.00
@@ -277,19 +281,13 @@ void setup(){
 	
 }
 
-void loop(){ 
-	//HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);  
-	//HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN); 
+void loop(){  
 	rtc_cnt = (RTC->CNTH << 16) + RTC->CNTL;
 	RTC_Get();
 	read_sensor();
 	
-	
-	//if(testt++ < 5) fs_write();
-	
 	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	HAL_Delay(500);
-	//HAL_GPIO_WritePin(DONE_GPIO_Port, DONE_Pin, 1);
 	
 	//I2C restart if no reply
 }

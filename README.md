@@ -34,6 +34,8 @@ How to use:
 ![Controller](/document/imgs/sch1.png) 
 ![Sensors](/document/imgs/sch2.png) 
 
+(notice: choose 7pf 32.768khz crystal oscillator for stable oscillation)
+
 ### PCB
 ![PCB](/document/imgs/pcb.jpg) 
 
