@@ -46,7 +46,7 @@ int wsec,wmin,whour,wday,wmon,wyear;
 uint32_t time_sep = 3600, reset_time = 0;
 extern uint8_t usb_state;
 
-int testt = 0;
+uint8_t usb_on = 0;
 
 uint32_t getsize(char *s){
 	uint32_t i = 0;
@@ -79,7 +79,7 @@ FRESULT fs_write(){
         size = f_size(&file);
         if(size == 0){ //create
             memset(buf,0,sizeof(buf));
-            sprintf((char *)buf,"%s,%s,%s,%s,%s\r\n","Time","Temperature","Humidity","Light","Sound");
+            sprintf((char *)buf,"%s,%s,%s,%s,%s,%s\r\n","Time","Temperature","Humidity","Light","Sound","VBAT");
             fr= f_write(&file, buf, getsize(buf),(void *)&br);
             if(fr != FR_OK){
                 printf("Title write process error code is %d...\r\n",fr);  
@@ -87,13 +87,18 @@ FRESULT fs_write(){
         }else{
             fr = f_lseek(&file, size);
             memset(buf,0,sizeof(buf));
-            sprintf((char *)buf,"%d:%d,%.1f,%.1f,%d,%.1f\r\n", 
+			vbat = 4096/(float)vref * 1.5;
+			float vbat_percent = (vbat - 2.5)/(3.2 - 2.5) * 100;
+			if(vbat_percent < 0) vbat_percent = 0;
+			else if(vbat_percent > 100) vbat_percent = 100;
+            sprintf((char *)buf,"%d:%d,%.1f,%.1f,%d,%.1f,%.0f%%\r\n", 
                         calendar.hour,
                         calendar.min,
                         temperature,
                         humidity,
                         light,
-                        db);
+                        db,
+						vbat_percent);
             fr = f_write(&file, buf, getsize(buf),(void *)&br);
             if(fr != FR_OK){
                 printf("Data write process error code is %d...\r\n",fr);  
@@ -140,7 +145,7 @@ void read_sensor(){
 	temperature = 0;
 	humidity = 0;
 	int try_n = 10;
-	while(temperature == 0 && try_n > 0){
+	while(temperature <= 0 && try_n > 0){
 		sht_state = SHT30_Read_Dat(dat);
 		SHT30_Dat_To_Float(dat, &temperature, &humidity);
 		try_n--;
@@ -209,8 +214,21 @@ void setup(){
 	SHT30_Reset();
 	SHT30_Init();
 
+	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		//read vbat
+		fr = f_mount(&fs, path, 1);
+		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_READ);
+		uint8_t numofread;
+		fr = f_read(&file, &vref, 4, (UINT*)&numofread);
+		fr = f_close(&file);
+		vbat = 4096/(float)vref * 1.5;
+	}
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+		usb_on = 1;
 		RTC_Get();
+		if(vbat <= 2.5){
+			led_fastblink();
+		}
 		//HAL_Delay(500);
 		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		read_sensor();
@@ -232,14 +250,19 @@ void setup(){
 	}
 	fr = f_close(&file);
 	
-	//write battery voltage
-	fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
-	fr = f_write(&file, &vref, 4, (UINT*)&numofread);
-	fr = f_close(&file);
+	if(!usb_on){
+		//write battery voltage
+		for(int k = 0; k < 5; k++)
+			vref += ADC_GetVal(ADC_CHANNEL_VREFINT);
+		vref /= 5;
+		fr = f_open(&file,"0:device.inf", FA_OPEN_ALWAYS | FA_WRITE);
+		fr = f_write(&file, &vref, 4, (UINT*)&numofread);
+		fr = f_close(&file);
+	}
 	
 	//write data into csv file
-	//for(int i = 0; i < 5; i++){
-	read_sensor();
+	for(int i = 0; i < 2; i++){
+	read_sensor();}
 	fs_write();
 	//}db=0;fs_write();
 		
