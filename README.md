@@ -59,3 +59,6 @@ The project file is in /firmware/
 For background on / motivation for this project, please see https://opendeved.net/programmes/ilce-in-tanzania/.
 
 Reference: (same project with different design) https://github.com/bablokb/pcb-pico-datalogger#pico-datalogger-with-integrated-power-management
+
+## License
+This work is licensed under CC-BY-4.0.
